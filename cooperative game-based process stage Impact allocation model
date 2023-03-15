@@ -1,0 +1,62 @@
+SETS
+         f      working facility /1*6/
+         c      optimisation criteria /GP/
+
+Parameter    tctb(c)   contribution for full scenarios
+/
+*         gp                  4.26E+07
+         GP                  18316327.27
+
+/
+
+Table  w(f,c)          working process
+
+                            GP
+          1                 6.35
+          2                 9.65
+          3                 0.42
+          4                 8.45
+          5                 0.87
+          6                 1.51
+
+
+
+Table  ctb(f,c)          working process
+
+                            GP
+          1                 0
+          2                 0
+          3                 0
+          4                 0
+          5                 0
+          6                 0
+
+POSITIVE VARIABLES
+
+ctba(f,c)    contribution allocation for f
+lamda(c)      lamda for each criteria
+ctbper(f,c)
+
+variables
+z             objective function
+
+EQUATIONS
+
+obj
+weight(f,c)
+allbal(f,c)
+sumbal
+percent(f,c)
+;
+
+obj..         z =e= lamda('GP')   ;
+weight(f,c)..    ctba(f,c) =g= w(f,c)*lamda(c);
+allbal(f,c)..    ctba(f,c) =g= ctb(f,c);
+sumbal(c)..      sum(f,ctba(f,c)) =e= tctb(c);
+percent(f,c)..   ctbper(f,c) =e= (ctba(f,c)/tctb(c))*100
+
+
+MODEL pobcgame/ALL/;
+SOLVE pobcgame MAXIMISING z using LP ;
+
+Display ctba.L;
